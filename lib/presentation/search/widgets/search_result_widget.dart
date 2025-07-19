@@ -39,7 +39,8 @@ class MainCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
+      height: 200,
+      width: 150,
       decoration: BoxDecoration(
         image: DecorationImage(image: NetworkImage(image), fit: BoxFit.cover),
         borderRadius: BorderRadius.all(Radius.circular(10)),
