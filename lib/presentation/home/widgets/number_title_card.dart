@@ -14,7 +14,7 @@ class NumberTitleCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         kHeight,
-        MainTitle(title: "title"),
+        MainTitle(title: "Top 10 Tv Shows In India Today"),
         SizedBox(height: 5),
         LimitedBox(
           maxHeight: 200,

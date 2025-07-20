@@ -29,7 +29,7 @@ class NumberCardWidget extends StatelessWidget {
             ],
           ),
           Positioned(
-            bottom: 0,
+            bottom: -40,
             left: 5,
             child: Text(
               index.toString(),
