@@ -7,12 +7,12 @@ class CustomHomeButtonWidget extends StatelessWidget {
   final double iconSize;
   final double textSize;
 
-
   const CustomHomeButtonWidget({
     super.key,
     required this.icon,
-    required this.title, this.iconSize=30,  this.textSize=17,
-
+    required this.title,
+    this.iconSize = 30,
+    this.textSize = 17,
   });
 
   @override

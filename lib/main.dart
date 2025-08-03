@@ -1,36 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:netflix/application/downloads/downloads_bloc.dart';
+import 'package:netflix/application/search/search_bloc.dart';
 import 'package:netflix/core/colors/colors.dart';
+import 'package:netflix/domain/di/injectable.dart';
 import 'package:netflix/presentation/main_page/screen_main_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
+Future<void> main() async {
+  // some time maybe facing issue in production, so need to add WidgetsFlutterBinding for avoiding that
+  WidgetsFlutterBinding.ensureInitialized();
+  // this call the injection
+  await configureDependencies();
+
+  // Optional but helpful
+  // assert(getIt.isRegistered<DownloadsBloc>(), 'DownloadsBloc not registered!');
+  // assert(
+  //   getIt.isRegistered<IDownloadsRepo>(),
+  //   'IDownloadsRepo not registered!',
+  // );
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.black,
-          titleTextStyle: TextStyle(color: Colors.white),
+    return MultiBlocProvider(
+      providers: [
+        // BlocProvider(create: (ctx) => getIt<DownloadsBloc>())
+        BlocProvider(
+          create: (ctx) => getIt.isRegistered<DownloadsBloc>()
+              ? getIt<DownloadsBloc>()
+              : throw Exception('DownloadsBloc not registered'),
         ),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        fontFamily: GoogleFonts.montserrat().fontFamily,
-        scaffoldBackgroundColor: backgroundColor,
-        textTheme: TextTheme(
-          bodySmall: TextStyle(color: Colors.white),
-          bodyLarge: TextStyle(color: Colors.white),
-          bodyMedium: TextStyle(color: Colors.white),
+        BlocProvider(
+          create: (ctx) => getIt.isRegistered<SearchBloc>()
+              ? getIt<SearchBloc>()
+              : throw Exception('SearchBloc not registered'),
         ),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.black,
+            titleTextStyle: TextStyle(color: Colors.white),
+          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          fontFamily: GoogleFonts.montserrat().fontFamily,
+          scaffoldBackgroundColor: backgroundColor,
+          textTheme: TextTheme(
+            bodySmall: TextStyle(color: Colors.white),
+            bodyLarge: TextStyle(color: Colors.white),
+            bodyMedium: TextStyle(color: Colors.white),
+          ),
+        ),
+        home: ScreenMainPage(),
       ),
-      home: ScreenMainPage(),
     );
   }
 }

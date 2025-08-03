@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:netflix/core/colors/colors.dart';
 
 class VideoWidget extends StatelessWidget {
-  const VideoWidget({
-    super.key,
-  });
+  const VideoWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:netflix/application/downloads/downloads_bloc.dart';
 import 'package:netflix/core/colors/colors.dart';
 import 'package:netflix/core/constants.dart';
 import 'package:netflix/presentation/widgets/app_bar_widget.dart';
@@ -29,9 +31,9 @@ class ScreenDownloads extends StatelessWidget {
         child: AppBarWidget(appBarTitle: "Downloads"),
       ),
       body: ListView.separated(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         itemBuilder: (ctx, index) => _widgetList[index],
-        separatorBuilder: (ctx, index) => SizedBox(height: 25),
+        separatorBuilder: (ctx, index) => const SizedBox(height: 25),
         itemCount: _widgetList.length,
       ),
     );
@@ -43,10 +45,22 @@ class MiddleScreenWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // this call at a time when app open
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BlocProvider.of<DownloadsBloc>(
+        context,
+      ).add(const DownloadsEvent.getDownloadsImages());
+    });
+
+    // this call every time when that screen open
+    // BlocProvider.of<DownloadsBloc>(
+    //   context,
+    // ).add(const DownloadsEvent.getDownloadsImages());
+
     final Size screenSize = MediaQuery.of(context).size;
     return Column(
       children: [
-        Text(
+        const Text(
           "Introducing Downloads for you",
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -56,7 +70,7 @@ class MiddleScreenWidget extends StatelessWidget {
           ),
         ),
         kHeight,
-        Text(
+        const Text(
           "We will download a personalised selection of \n movies and shows for you, so there is \n always something to watch on your device",
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -66,44 +80,65 @@ class MiddleScreenWidget extends StatelessWidget {
           ),
         ),
         kHeight,
-        SizedBox(
-          // height: screenSize.width,
-          width: screenSize.width,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              CircleAvatar(
-                radius: screenSize.width * 0.35,
-                backgroundColor: kGrayColor.shade800,
-              ),
-              DownloadsImageWidget(
-                image: imageList[2],
-                margin: EdgeInsets.only(left: 200),
-                rotation: 15,
-                screenSize: Size(
-                  screenSize.width * 0.35,
-                  screenSize.width * 0.50,
+        BlocBuilder<DownloadsBloc, DownloadsState>(
+          builder: (context, state) {
+            final downloads = state.downloads;
+
+            // Show message if not enough images
+            if (downloads.length < 3) {
+              return const Center(
+                child: Text(
+                  'Not enough data to display downloads.',
+                  style: TextStyle(color: Colors.white),
                 ),
-              ),
-              DownloadsImageWidget(
-                image: imageList[1],
-                margin: EdgeInsets.only(right: 200),
-                rotation: -15,
-                screenSize: Size(
-                  screenSize.width * 0.35,
-                  screenSize.width * 0.50,
-                ),
-              ),
-              DownloadsImageWidget(
-                image: imageList[0],
-                margin: EdgeInsets.only(left: 0),
-                screenSize: Size(
-                  screenSize.width * 0.4,
-                  screenSize.width * 0.52,
-                ),
-              ),
-            ],
-          ),
+              );
+            }
+
+            return SizedBox(
+              height: screenSize.width * 0.8,
+              width: screenSize.width,
+              child: state.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: screenSize.width * 0.35,
+                          backgroundColor: kGrayColor.shade800,
+                        ),
+                        DownloadsImageWidget(
+                          image:
+                              '$imagePathURL${state.downloads[0].posterPath}',
+                          margin: const EdgeInsets.only(left: 200),
+                          rotation: 15,
+                          screenSize: Size(
+                            screenSize.width * 0.35,
+                            screenSize.width * 0.50,
+                          ),
+                        ),
+                        DownloadsImageWidget(
+                          image:
+                              '$imagePathURL${state.downloads[2].posterPath}',
+                          margin: const EdgeInsets.only(right: 200),
+                          rotation: -15,
+                          screenSize: Size(
+                            screenSize.width * 0.35,
+                            screenSize.width * 0.50,
+                          ),
+                        ),
+                        DownloadsImageWidget(
+                          image:
+                              '$imagePathURL${state.downloads[3].posterPath}',
+                          margin: const EdgeInsets.only(left: 0),
+                          screenSize: Size(
+                            screenSize.width * 0.4,
+                            screenSize.width * 0.52,
+                          ),
+                        ),
+                      ],
+                    ),
+            );
+          },
         ),
       ],
     );

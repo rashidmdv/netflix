@@ -3,7 +3,6 @@ import 'package:netflix/core/colors/colors.dart';
 import 'package:netflix/core/constants.dart';
 
 class AppBarWidget extends StatelessWidget {
-
   final String appBarTitle;
 
   const AppBarWidget({super.key, required this.appBarTitle});

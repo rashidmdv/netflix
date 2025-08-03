@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:netflix/application/search/search_bloc.dart';
 import 'package:netflix/core/colors/colors.dart';
 import 'package:netflix/core/constants.dart';
+import 'package:netflix/domain/core/api_urls.dart';
 import 'package:netflix/presentation/search/widgets/search_title_widget.dart';
 
 const imageURL =
@@ -15,15 +18,31 @@ class SearchIdleWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SearchTitleWidget(searchTitle: "Top Searches"),
+        const SearchTitleWidget(searchTitle: "Top Searches"),
         kHeight,
 
         Expanded(
-          child: ListView.separated(
-            shrinkWrap: true,
-            itemBuilder: (ctx, index) => TopSearchCard(),
-            separatorBuilder: (ctx, index) => kHeight20,
-            itemCount: 10,
+          child: BlocBuilder<SearchBloc, SearchState>(
+            builder: (context, state) {
+              if (state.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state.isError) {
+                return const Center(child: Text("error is gotten"));
+              } else if (state.idleData.isEmpty) {
+                return const Center(child: Text("error is gotten"));
+              } else {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (ctx, index) => TopSearchCard(
+                    movieTitle:
+                        state.idleData[index].title ?? "No title available",
+                    movieImage: state.idleData[index].posterPath ?? "",
+                  ),
+                  separatorBuilder: (ctx, index) => kHeight20,
+                  itemCount: state.idleData.length,
+                );
+              }
+            },
           ),
         ),
       ],
@@ -32,7 +51,14 @@ class SearchIdleWidget extends StatelessWidget {
 }
 
 class TopSearchCard extends StatelessWidget {
-  const TopSearchCard({super.key});
+  final String movieTitle;
+  final String movieImage;
+
+  const TopSearchCard({
+    super.key,
+    required this.movieTitle,
+    required this.movieImage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +70,7 @@ class TopSearchCard extends StatelessWidget {
           height: 90,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: NetworkImage(imageURL),
+              image: NetworkImage(ApiUrls.kImageUrl + movieImage),
               fit: BoxFit.fill,
             ),
           ),
@@ -52,8 +78,8 @@ class TopSearchCard extends StatelessWidget {
         kWidth,
         Expanded(
           child: Text(
-            "Movie Name",
-            style: TextStyle(
+            movieTitle,
+            style: const TextStyle(
               fontSize: 17,
               color: kWhiteColor,
               fontWeight: FontWeight.bold,
@@ -61,7 +87,7 @@ class TopSearchCard extends StatelessWidget {
           ),
         ),
         kWidth,
-        Icon(CupertinoIcons.play_circle, color: kWhiteColor, size: 40),
+        const Icon(CupertinoIcons.play_circle, color: kWhiteColor, size: 40),
         kWidth,
       ],
     );

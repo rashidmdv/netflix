@@ -4,9 +4,7 @@ import 'package:netflix/presentation/home/widgets/number_card_widget.dart';
 import 'package:netflix/presentation/widgets/main_title.dart';
 
 class NumberTitleCard extends StatelessWidget {
-  const NumberTitleCard({
-    super.key,
-  });
+  const NumberTitleCard({super.key});
 
   @override
   Widget build(BuildContext context) {
