@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:netflix/application/search/search_bloc.dart';
 import 'package:netflix/core/constants.dart';
-import 'package:netflix/presentation/search/widgets/search_idle.dart';
+import 'package:netflix/domain/core/api_urls.dart';
+// import 'package:netflix/presentation/search/widgets/search_idle.dart';
 import 'package:netflix/presentation/search/widgets/search_title_widget.dart';
 
 const image =
@@ -17,15 +20,31 @@ class SearchResultWidget extends StatelessWidget {
         const SearchTitleWidget(searchTitle: "Movies & TV"),
         kHeight,
         Expanded(
-          child: GridView.count(
-            shrinkWrap: true,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            crossAxisCount: 3,
-            childAspectRatio: 1 / 1.4,
-            children: List.generate(20, (index) {
-              return MainCard();
-            }),
+          child: BlocBuilder<SearchBloc, SearchState>(
+            builder: (context, state) {
+              if (state.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state.searchResultData.isEmpty) {
+                return const Center(child: Text("No data Found"));
+              } else if (state.isError) {
+                return const Center(child: Text("Error is happen"));
+              } else if (state.searchResultData.isNotEmpty) {
+                return GridView.count(
+                  shrinkWrap: true,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  crossAxisCount: 3,
+                  childAspectRatio: 1 / 1.4,
+                  children: List.generate(20, (index) {
+                    return MainCard(
+                      imageUrl: state.searchResultData[index].posterPath ?? "",
+                    );
+                  }),
+                );
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
           ),
         ),
       ],
@@ -34,7 +53,8 @@ class SearchResultWidget extends StatelessWidget {
 }
 
 class MainCard extends StatelessWidget {
-  const MainCard({super.key});
+  final String imageUrl;
+  const MainCard({super.key, required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +62,11 @@ class MainCard extends StatelessWidget {
       height: 200,
       width: 150,
       decoration: BoxDecoration(
-        image: DecorationImage(image: NetworkImage(image), fit: BoxFit.cover),
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+        image: DecorationImage(
+          image: NetworkImage(ApiUrls.kImageUrl + imageUrl),
+          fit: BoxFit.cover,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
     );
   }

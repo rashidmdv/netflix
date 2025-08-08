@@ -4,12 +4,20 @@ import 'package:netflix/presentation/home/widgets/custom_button_widget.dart';
 import 'package:netflix/presentation/widgets/video_widget.dart';
 
 class EveryOnesWatchingWidget extends StatelessWidget {
-  const EveryOnesWatchingWidget({super.key});
+  final String posterPath;
+  final String movieName;
+  final String description;
+  const EveryOnesWatchingWidget({
+    super.key,
+    required this.posterPath,
+    required this.movieName,
+    required this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+    return const Padding(
+      padding:  EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:netflix/application/hot_and_new/hot_and_new_bloc.dart';
 import 'package:netflix/core/colors/colors.dart';
 import 'package:netflix/core/constants.dart';
 import 'package:netflix/presentation/home/widgets/custom_button_widget.dart';
@@ -16,7 +19,7 @@ class ScreenNewAndHot extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: false,
-          title: Text(
+          title: const Text(
             'New & Hot',
             textAlign: TextAlign.start,
             style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
@@ -43,13 +46,13 @@ class ScreenNewAndHot extends StatelessWidget {
               color: kWhiteColor,
             ),
             indicatorAnimation: TabIndicatorAnimation.linear,
-            tabs: [
+            tabs: const [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
                 child: Tab(text: "🍿 Coming Soon"),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
                 child: Tab(text: "🍿 Everyone Watching"),
               ),
             ],
@@ -57,7 +60,7 @@ class ScreenNewAndHot extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            _buildComingSoon(context),
+            const ComingSoonList(key: Key("coming soon")),
             _buildEveryOnesWatching(context),
           ],
         ),
@@ -65,21 +68,84 @@ class ScreenNewAndHot extends StatelessWidget {
     );
   }
 
-  Widget _buildComingSoon(context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: 5,
-      itemBuilder: (context, index) {
-        return ComingSoonWidget();
-      },
-    );
-  }
+  // Widget _buildComingSoon(context) {
+  //   return ListView.builder(
+  //     shrinkWrap: true,
+  //     itemCount: 5,
+  //     itemBuilder: (context, index) {
+  //       return ComingSoonWidget(
+  //         id: "1",
+  //         month: "FEB",
+  //         day: "11",
+  //         posterPath: "posterPath",
+  //         movieName: "movieName",
+  //         description: "description",
+  //       );
+  //     },
+  //   );
+  // }
 
   Widget _buildEveryOnesWatching(context) {
     return ListView.builder(
       itemCount: 5,
       itemBuilder: (context, index) {
-        return EveryOnesWatchingWidget();
+        return EveryOnesWatchingWidget(
+          posterPath: "posterPath",
+          movieName: "movieName",
+          description: "description",
+        );
+      },
+    );
+  }
+}
+
+class ComingSoonList extends StatelessWidget {
+  const ComingSoonList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BlocProvider.of<HotAndNewBloc>(
+        context,
+      ).add(const HotAndNewEvent.loadDataInComingSoon());
+    });
+    return BlocBuilder<HotAndNewBloc, HotAndNewState>(
+      builder: (context, state) {
+        if (state.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state.hasError) {
+          return const Center(child: Text("Error"));
+        } else if (state.comingSoonList.isEmpty) {
+          return const Center(child: Text("No Data"));
+        } else {
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: state.comingSoonList.length,
+            itemBuilder: (context, index) {
+              final movie = state.comingSoonList[index];
+
+              if (movie.id == null) {
+                return const SizedBox();
+              }
+
+              final _date = DateTime.parse(movie.releaseDate!);
+              final formattedDate = DateFormat.yMMMMd('en_US').format(_date);
+              print(formattedDate);
+              return ComingSoonWidget(
+                id: movie.id.toString(),
+                month: formattedDate
+                    .split(" ")
+                    .first
+                    .substring(0, 3)
+                    .toUpperCase(),
+                day: movie.releaseDate!.split("-")[1],
+                posterPath: "${imagePathURL}${movie.posterPath}",
+                movieName: movie.originalTitle.toString(),
+                description: movie.overview.toString(),
+              );
+            },
+          );
+        }
       },
     );
   }

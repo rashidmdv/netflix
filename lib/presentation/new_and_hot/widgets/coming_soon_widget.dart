@@ -4,7 +4,22 @@ import 'package:netflix/core/constants.dart';
 import 'package:netflix/presentation/home/widgets/custom_button_widget.dart';
 
 class ComingSoonWidget extends StatelessWidget {
-  const ComingSoonWidget({super.key});
+  final String id;
+  final String month;
+  final String day;
+  final String posterPath;
+  final String movieName;
+  final String description;
+
+  const ComingSoonWidget({
+    super.key,
+    required this.id,
+    required this.month,
+    required this.day,
+    required this.posterPath,
+    required this.movieName,
+    required this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,17 +34,16 @@ class ComingSoonWidget extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  "FEB",
-                  style: TextStyle(
+                  month,
+                  style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: kGrayColor,
                   ),
                 ),
                 Text(
-                  "11",
-
-                  style: TextStyle(
+                  day,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 5,
@@ -49,10 +63,7 @@ class ComingSoonWidget extends StatelessWidget {
                     SizedBox(
                       height: 200,
                       width: double.infinity,
-                      child: Image.network(
-                        'https://media.themoviedb.org/t/p/w500_and_h282_face/b0PlSFdDwbyK0cf5RxwDpaOJQvQ.jpg',
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.network(posterPath, fit: BoxFit.cover),
                     ),
                     Positioned(
                       bottom: 10,
@@ -63,7 +74,7 @@ class ComingSoonWidget extends StatelessWidget {
                         child: IconButton(
                           color: kWhiteColor,
                           onPressed: () {},
-                          icon: Icon(Icons.volume_mute_outlined),
+                          icon: const Icon(Icons.volume_mute_outlined),
                         ),
                       ),
                     ),
@@ -73,15 +84,22 @@ class ComingSoonWidget extends StatelessWidget {
                 Row(
                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "TALL GIRL 2",
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 10.0),
+                        child: Text(
+                          movieName,
+                          maxLines: 1,
+                          overflow: TextOverflow.fade,
+                          style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                    Spacer(),
-                    Row(
+                    // const Spacer(),
+                    const Row(
                       children: [
                         CustomHomeButtonWidget(
                           icon: Icons.all_out_sharp,
@@ -102,16 +120,19 @@ class ComingSoonWidget extends StatelessWidget {
                   ],
                 ),
                 kHeight,
-                Text("Coming on Friday"),
+                Text("Coming on $day $month"),
                 kHeight,
                 Text(
-                  "TALL GIRL 2",
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  movieName,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 kHeight,
                 Text(
-                  "Landing the lead in the school musical is a dream come true for Jodi, until the pressure sends her confidence — and her relationship — into a tailspin.",
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                  description,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),

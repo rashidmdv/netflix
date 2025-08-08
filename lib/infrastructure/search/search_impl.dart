@@ -7,22 +7,22 @@ import 'package:netflix/domain/core/main_failuers/main_failures.dart';
 import 'package:netflix/domain/search/model/search_response/search_response.dart';
 import 'package:netflix/domain/search/search_service.dart';
 
-
 @LazySingleton(as: SearchService)
 class SearchImpl implements SearchService {
   @override
   Future<Either<MainFailures, SearchResponse>> searchMovies({
-    required String movieQuery,
+    String? movieQuery,
   }) async {
     try {
-      final Response response = await Dio(BaseOptions()).get(ApiUrls.search,queryParameters: {
-        'query': movieQuery,
-      });
+      final Response response = await Dio(
+        BaseOptions(
+          connectTimeout: Duration(seconds: 10),
+          receiveTimeout: Duration(seconds: 10),
+        ),
+      ).get(ApiUrls.search, queryParameters: {'query': movieQuery});
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // print(response.data['results']);
-
-          final result =   SearchResponse.fromJson(response.data);
-
+        final result = SearchResponse.fromJson(response.data);
         return Right(result);
       } else {
         return const Left(MainFailures.serverFailure());
