@@ -16,20 +16,12 @@ class HotAndNewBloc extends Bloc<HotAndNewEvent, HotAndNewState> {
 
   HotAndNewBloc(this._hotAndNewService) : super(HotAndNewState.initial()) {
     on<_LoadDataInComingSoon>((event, emit) async {
-      // print("🔥 Event triggered");
-      // send loading ui
-      // state.copyWith(
-      //   comingSoonList: [],
-      //   isLoading: true,
-      //   hasError: false,
-      //   everyOneWatchingList: [],
-      // );
       emit(
         state.copyWith(
-          comingSoonList: [],
+          comingSoonList: state.comingSoonList,
           isLoading: true,
           hasError: false,
-          everyOneWatchingList: [],
+          everyOneWatchingList: state.everyOneWatchingList,
         ),
       );
 
@@ -46,23 +38,14 @@ class HotAndNewBloc extends Bloc<HotAndNewEvent, HotAndNewState> {
             everyOneWatchingList: [],
           ),
         ),
-        // (success) => HotAndNewState(
-        //   comingSoonList: success.results,
-        //   everyOneWatchingList: state.everyOneWatchingList,
-        //   isLoading: false,
-        //   hasError: false,
-        // ),
-        (moviesList) {
-          print("------");
-          print(moviesList.results); // ✅ this is working
-          print("------");
 
+        (moviesList) {
           emit(
             state.copyWith(
               isLoading: false,
               hasError: false,
-              comingSoonList:
-                  moviesList.results, // ✅ make sure you assign this!
+              comingSoonList: moviesList.results,
+              everyOneWatchingList: state.everyOneWatchingList,
             ),
           );
         },
@@ -70,5 +53,42 @@ class HotAndNewBloc extends Bloc<HotAndNewEvent, HotAndNewState> {
     });
 
     // on<LoadDataInEveryOneWatching>((event, emit) {});
+
+    on<LoadDataInEveryOneWatching>((event, emit) async {
+      emit(
+        state.copyWith(
+          comingSoonList: state.comingSoonList,
+          isLoading: true,
+          hasError: false,
+          everyOneWatchingList: state.everyOneWatchingList,
+        ),
+      );
+
+      // get data from remote
+      final result = await _hotAndNewService.getHotAndTvData();
+
+      // data to state
+      result.fold(
+        (error) => emit(
+          state.copyWith(
+            comingSoonList: [],
+            isLoading: false,
+            hasError: true,
+            everyOneWatchingList: [],
+          ),
+        ),
+
+        (moviesList) {
+          emit(
+            state.copyWith(
+              isLoading: false,
+              hasError: false,
+              comingSoonList: state.comingSoonList,
+              everyOneWatchingList: moviesList.results,
+            ),
+          );
+        },
+      );
+    });
   }
 }

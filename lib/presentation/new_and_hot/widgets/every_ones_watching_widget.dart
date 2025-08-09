@@ -16,25 +16,25 @@ class EveryOnesWatchingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding:  EdgeInsets.symmetric(horizontal: 10.0),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           kHeight,
           Text(
-            "Friends",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            movieName,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           kHeight,
           Text(
-            "Landing the lead in the school musical is a dream come true for Jodi, until the pressure sends her confidence — and her relationship — into a tailspin.",
-            style: TextStyle(fontSize: 14, color: Colors.grey),
+            description,
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
           kHeight,
-          VideoWidget(),
+          VideoWidget(imagePath: posterPath),
           kHeight,
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               CustomHomeButtonWidget(

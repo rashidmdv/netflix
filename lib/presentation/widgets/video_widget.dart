@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:netflix/core/colors/colors.dart';
 
 class VideoWidget extends StatelessWidget {
-  const VideoWidget({super.key});
+
+  final String imagePath;
+  const VideoWidget({super.key, required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +14,7 @@ class VideoWidget extends StatelessWidget {
           height: 200,
           width: double.infinity,
           child: Image.network(
-            'https://media.themoviedb.org/t/p/w500_and_h282_face/b0PlSFdDwbyK0cf5RxwDpaOJQvQ.jpg',
+            imagePath,
             fit: BoxFit.cover,
           ),
         ),

@@ -17,9 +17,6 @@ class HotAndNewImpl implements HotAndNewService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final result = HotAndNew.fromJson(response.data);
-        print("------");
-        print(result.results);
-        print("------");
         return Right(result);
       } else {
         return const Left(MainFailures.serverFailure());
